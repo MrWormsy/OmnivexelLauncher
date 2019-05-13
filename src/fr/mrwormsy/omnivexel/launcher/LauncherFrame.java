@@ -10,21 +10,45 @@ import java.awt.event.MouseMotionAdapter;
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 
+import fr.trxyy.launcherlib.Init;
+import fr.trxyy.launcherlib.utils.LauncherConfiguration;
+import javafx.application.Application;
+
 public class LauncherFrame extends JFrame {
 	private static final long serialVersionUID = 1L;
 
 
 	
 	private static LauncherFrame instance;
-	private LauncherPanel launcherPanel;
+	private static LauncherPanel launcherPanel;
 	
 	//TODO CHANGE Authentification to Authentication
 
 	
+
+
+
+	@SuppressWarnings("static-access")
 	public static void main(String[] args) {
+		
+		
+			
+		
+		LauncherConfiguration config = new LauncherConfiguration(); 
+		config.setVersionId("1.9.4"); 
+		config.setAssetIndex("1.9"); 
+		config.setLaunchClass("net.minecraft.client.main.Main"); 
+		config.setDownloadUrl("http://51.75.254.98/downloads/"); 
+		config.setCurrentlyMaintenance(false); 
+		config.setMaintenanceUrl(""); 
+		config.setLaunchArguments("--username ${auth_player_name} --version ${version_name} --gameDir ${game_directory} --assetsDir ${assets_root} --assetIndex ${assets_index_name} --uuid ${auth_uuid} --accessToken ${auth_access_token} --userType ${user_type} --versionType ${version_type}"); 
+		Init.setConfiguration(config);
+		Init.registerLauncherConfiguration("Omnivexel Launcher", 850, 540, "omnivexelprojec", "/resources/"); 
 		
 		instance = new LauncherFrame();
 		
+		
+		PropertiesSaver.loadUserProps();
 	}
 	
 
@@ -32,6 +56,12 @@ public class LauncherFrame extends JFrame {
 	 * Initialize the contents of the frame.
 	 */
 	private LauncherFrame() {	
+		
+		//TESTS
+		
+		
+		
+		
 		
 		this.setTitle("Omnivexel Launcher");
 		this.setSize(690, 540);
@@ -77,5 +107,7 @@ public class LauncherFrame extends JFrame {
 		return instance;
 	}
 	
-
+	public static LauncherPanel getLauncherPanel() {
+		return launcherPanel;
+	}
 }

@@ -7,31 +7,53 @@ import java.awt.Graphics;
 import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.Timer;
+import java.util.TimerTask;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 import javax.swing.ImageIcon;
 import javax.swing.JPanel;
 import javax.swing.JPasswordField;
+import javax.swing.JProgressBar;
 import javax.swing.JSlider;
 import javax.swing.JTextField;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
+import fr.trxyy.launcherlib.accounts.Account;
+import fr.trxyy.launcherlib.update.GameUpdater;
+
 
 
 public class LauncherPanel extends JPanel {
 	private static final long serialVersionUID = 3087434899043525718L;
-	private JTextField textField;
+	private JTextField usernamField;
 	private JPasswordField passInput;
 	private CustomCheckbox chckbxNewCheckBox;
 	private JSlider ramSelector;
 	private JTextField ramIndicator;
 	private CustomButton connectionToServerOn;
 	private CustomButton connectionToServerOff;
+	private CustomButton launchButton;
+	private JProgressBar progressBar;
 	
 	private Image backgroundWithPass = (new ImageIcon(LauncherFrame.class.getResource("/fr/mrwormsy/omnivexel/launcher/resources/backgroundWithPass.png")).getImage());
 	private Image backgroundWithoutPass = (new ImageIcon(LauncherFrame.class.getResource("/fr/mrwormsy/omnivexel/launcher/resources/backgroundWithoutPass.png")).getImage());
 	
 	private boolean connectionToOmnivexelServer;
+	
+	public boolean isConnectionToOmnivexelServer() {
+		return connectionToOmnivexelServer;
+	}
+
+	public void setConnectionToOmnivexelServer(boolean connectionToOmnivexelServer) {
+		this.connectionToOmnivexelServer = connectionToOmnivexelServer;
+	}
 
 	@Override
 	protected void paintComponent(Graphics g) {
@@ -62,13 +84,13 @@ public class LauncherPanel extends JPanel {
 		chckbxNewCheckBox.setBorder(null);
 
 		
-		textField = new JTextField();
-		textField.setFont(new Font("SansSerif", Font.PLAIN, 28));
-		textField.setBounds(728, 193, 188, 36);
-		textField.setBackground(new Color(89,84,74));
-		textField.setCaretColor(new Color(245, 245, 212));
-		textField.setForeground(new Color(245, 245, 212));
-		textField.setBorder(null);
+		usernamField = new JTextField();
+		usernamField.setFont(new Font("SansSerif", Font.PLAIN, 28));
+		usernamField.setBounds(728, 193, 188, 36);
+		usernamField.setBackground(new Color(89,84,74));
+		usernamField.setCaretColor(new Color(245, 245, 212));
+		usernamField.setForeground(new Color(245, 245, 212));
+		usernamField.setBorder(null);
 
 		passInput = new JPasswordField();
 		passInput.setFont(new Font("SansSerif", Font.PLAIN, 28));
@@ -78,7 +100,7 @@ public class LauncherPanel extends JPanel {
 		passInput.setForeground(new Color(245, 245, 212));
 		passInput.setBorder(null);
 		
-		CustomButton launchButton = new CustomButton((new ImageIcon(LauncherFrame.class.getResource("/fr/mrwormsy/omnivexel/launcher/resources/launch.png"))).getImage(), (new ImageIcon(LauncherFrame.class.getResource("/fr/mrwormsy/omnivexel/launcher/resources/launchPressed.png"))).getImage());
+		launchButton = new CustomButton((new ImageIcon(LauncherFrame.class.getResource("/fr/mrwormsy/omnivexel/launcher/resources/launch.png"))).getImage(), (new ImageIcon(LauncherFrame.class.getResource("/fr/mrwormsy/omnivexel/launcher/resources/launchPressed.png"))).getImage());
 		
 		//launchButton.setIcon(launch);
 		launchButton.setBounds(777, 346, 130, 50);
@@ -89,7 +111,7 @@ public class LauncherPanel extends JPanel {
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
-								
+				launchGame();
 			}
 		});
 
@@ -190,6 +212,10 @@ public class LauncherPanel extends JPanel {
 			}
 		});
 		
+		progressBar = new JProgressBar(5, 10);
+		progressBar.setBounds(400, 400, 100, 20);
+		progressBar.setValue(5);
+		
 		
 		this.add(reduceButton);
 		this.add(closeButton);
@@ -197,16 +223,101 @@ public class LauncherPanel extends JPanel {
 		this.add(ramSelector);
 		this.add(launchButton);
 		this.add(passInput);
-		this.add(textField);
+		this.add(usernamField);
 		this.add(connectionToServerOn);
 		this.add(chckbxNewCheckBox);
+		this.add(progressBar);
 		
 	}
 	
+	public JTextField getUsernamField() {
+		return usernamField;
+	}
+
+	public CustomCheckbox getChckbxNewCheckBox() {
+		return chckbxNewCheckBox;
+	}
+
+	public JSlider getRamSelector() {
+		return ramSelector;
+	}
+
+	protected void launchGame() {
+		Account.setUsername(usernamField.getText());
+		Account.setRam(String.valueOf(ramSelector.getValue() * 512) + "M");
+			
+		
+		launchButton.setEnabled(false);
+		usernamField.setEnabled(false);
+		passInput.setEnabled(false);
+		chckbxNewCheckBox.setEnabled(false);
+		connectionToServerOn.setEnabled(false);
+		connectionToServerOff.setEnabled(false);
+		ramSelector.setEnabled(false);
+		
+		GameUpdater gameUpdater = new GameUpdater();
+        
+        
+            	Thread thread = new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                    	
+                    	
+                        ScheduledExecutorService exec = Executors.newSingleThreadScheduledExecutor();
+                        exec.scheduleAtFixedRate(new Runnable() {
+                          @Override
+                          public void run() {
+                        	  
+                        	  if (progressBar.getMinimum() != 0) {
+                        		  progressBar.setMaximum(gameUpdater.downloadTask.needToDownload);
+                        		  progressBar.setMinimum(0);
+                        	  }
+                        	
+                        	
+    						progressBar.setValue(gameUpdater.downloadTask.downloadedFiles);
+    						//System.out.println(gameUpdater.downloadTask.downloadedFiles);
+                        	  
+                        	  
+                          }
+                        }, 2000, 100, TimeUnit.MILLISECONDS);                    	
+                    }
+                });
+            	
+            	thread.start();
+		
+		gameUpdater.checkForUpdateLauncher();
+		
+		PropertiesSaver.saveProps();
+		
+		/*
+		
+        LaunchGame gameLaunch = new LaunchGame();
+        gameLaunch.launchGame();
+        
+        LauncherFrame.getInstance().dispose();
+        System.exit(0);
+		
+		
+	
+		*/
+	}
+
 	public void refreshTextures() {
 
 		this.repaint();
 		
-	}
+	}	
 	
+	 public long fileCount(Path dir) { 
+		    try {
+				return Files.walk(dir)
+				            .parallel()
+				            .filter(p -> !p.toFile().isDirectory())
+				            .count();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			return 0;
+	 }
 }

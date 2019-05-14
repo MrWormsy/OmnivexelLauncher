@@ -7,10 +7,10 @@ import java.awt.Graphics;
 import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.IOException;
 
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
+import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JPasswordField;
@@ -19,13 +19,6 @@ import javax.swing.JTextField;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
-import com.launcher.game.process.direct.LaunchGame;
-
-import fr.theshark34.supdate.BarAPI;
-import fr.theshark34.supdate.exception.BadServerResponseException;
-import fr.theshark34.supdate.exception.BadServerVersionException;
-import fr.theshark34.supdate.exception.ServerDisabledException;
-import fr.theshark34.supdate.exception.ServerMissingSomethingException;
 import fr.trxyy.launcherlib.accounts.Account;
 
 
@@ -42,22 +35,12 @@ public class LauncherPanel extends JPanel {
 	private CustomButton launchButton;
 	private CustomProgressbar progressBar;
 	
-	public CustomProgressbar getProgressBar() {
-		return progressBar;
-	}
+	private JLabel progressBarInfos;
 
 	private Image backgroundWithPass = (new ImageIcon(LauncherFrame.class.getResource("/fr/mrwormsy/omnivexel/launcher/resources/backgroundWithPass.png")).getImage());
 	private Image backgroundWithoutPass = (new ImageIcon(LauncherFrame.class.getResource("/fr/mrwormsy/omnivexel/launcher/resources/backgroundWithoutPass.png")).getImage());
 	
 	private boolean connectionToOmnivexelServer;
-	
-	public boolean isConnectionToOmnivexelServer() {
-		return connectionToOmnivexelServer;
-	}
-
-	public void setConnectionToOmnivexelServer(boolean connectionToOmnivexelServer) {
-		this.connectionToOmnivexelServer = connectionToOmnivexelServer;
-	}
 
 	@Override
 	protected void paintComponent(Graphics g) {
@@ -231,6 +214,13 @@ public class LauncherPanel extends JPanel {
 		progressBar.setMinimum(0);
 		progressBar.setMaximum(0);
 		
+		progressBarInfos = new JLabel("Launch the game !");
+		progressBarInfos.setHorizontalTextPosition(JLabel.CENTER);
+		progressBarInfos.setVerticalAlignment(JLabel.CENTER);
+		progressBarInfos.setBounds(405, 465, 150, 25);
+		progressBarInfos.setFont(new Font("SansSerif", Font.BOLD, 16));
+		progressBarInfos.setIcon(new ImageIcon(LauncherFrame.class.getResource("/fr/mrwormsy/omnivexel/launcher/resources/ProgressBarInfos.png")));
+		
 		
 		
 		this.add(reduceButton);
@@ -243,24 +233,12 @@ public class LauncherPanel extends JPanel {
 		this.add(connectionToServerOn);
 		this.add(chckbxNewCheckBox);
 		this.add(progressBar);		
-	}
-	
-	public JTextField getUsernamField() {
-		return usernamField;
-	}
-
-	public CustomCheckbox getChckbxNewCheckBox() {
-		return chckbxNewCheckBox;
-	}
-
-	public JSlider getRamSelector() {
-		return ramSelector;
+		this.add(progressBarInfos);
 	}
 	
 	public void preLaunch() {
 		Account.setUsername(usernamField.getText());
 		Account.setRam(String.valueOf(ramSelector.getValue() * 512) + "M");
-
 
 		launchButton.setEnabled(false);
 		usernamField.setEnabled(false);
@@ -295,12 +273,39 @@ public class LauncherPanel extends JPanel {
 	}
 
 	public void refreshTextures() {
-
-		this.repaint();
-		
+		this.repaint();	
 	}
 
+	public JTextField getUsernamField() {
+		return usernamField;
+	}
+
+	public CustomCheckbox getChckbxNewCheckBox() {
+		return chckbxNewCheckBox;
+	}
+
+	public JSlider getRamSelector() {
+		return ramSelector;
+	}
+	
 	public JButton getLaunchButton() {
 		return this.launchButton;
+	}
+	
+	
+	public JLabel getProgressBarInfos() {
+		return progressBarInfos;
+	}
+
+	public CustomProgressbar getProgressBar() {
+		return progressBar;
+	}
+	
+	public boolean isConnectionToOmnivexelServer() {
+		return connectionToOmnivexelServer;
+	}
+
+	public void setConnectionToOmnivexelServer(boolean connectionToOmnivexelServer) {
+		this.connectionToOmnivexelServer = connectionToOmnivexelServer;
 	}
 }

@@ -7,6 +7,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionAdapter;
 import java.io.IOException;
+import java.text.DecimalFormat;
 
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
@@ -114,7 +115,7 @@ public class LauncherFrame extends JFrame {
 	
 	public static void update() throws Exception {
 		setSu(new SUpdate("http://51.75.254.98/omnivexel/", OSUtil.getDirectory()));
-		
+				
 		thread = new Thread() {
 			
 			private int val;
@@ -132,9 +133,14 @@ public class LauncherFrame extends JFrame {
 					LauncherFrame.getLauncherPanel().getProgressBar().setMaximum(max);
 					LauncherFrame.getLauncherPanel().getProgressBar().setValue(val);
 					
+					if (max != 0) {
+						launcherPanel.getProgressBarInfos().setText((int) (((double) val / (double) max) * 100) + "% (" + val/1000 + "/" + max/1000 + "MB)");
+					}
+					
 				}
 				
 				if (max - val == 0) {
+					launcherPanel.getProgressBarInfos().setText("Launching...");
 					launchGame();
 				}
 				

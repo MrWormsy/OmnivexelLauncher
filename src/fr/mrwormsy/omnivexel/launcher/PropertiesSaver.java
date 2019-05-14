@@ -12,7 +12,6 @@ import fr.trxyy.launcherlib.LauncherConstants;
 import fr.trxyy.launcherlib.OSUtil;
 import fr.trxyy.launcherlib.accounts.Account;
 import fr.trxyy.launcherlib.utils.Logger;
-import javafx.stage.Popup;
 
 public class PropertiesSaver {
     public static String username;

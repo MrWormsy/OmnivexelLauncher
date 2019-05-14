@@ -8,25 +8,25 @@ import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.util.Timer;
-import java.util.TimerTask;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
 
 import javax.swing.ImageIcon;
+import javax.swing.JButton;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JPasswordField;
-import javax.swing.JProgressBar;
 import javax.swing.JSlider;
 import javax.swing.JTextField;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
+import com.launcher.game.process.direct.LaunchGame;
+
+import fr.theshark34.supdate.BarAPI;
+import fr.theshark34.supdate.exception.BadServerResponseException;
+import fr.theshark34.supdate.exception.BadServerVersionException;
+import fr.theshark34.supdate.exception.ServerDisabledException;
+import fr.theshark34.supdate.exception.ServerMissingSomethingException;
 import fr.trxyy.launcherlib.accounts.Account;
-import fr.trxyy.launcherlib.update.GameUpdater;
 
 
 
@@ -40,8 +40,12 @@ public class LauncherPanel extends JPanel {
 	private CustomButton connectionToServerOn;
 	private CustomButton connectionToServerOff;
 	private CustomButton launchButton;
-	private JProgressBar progressBar;
+	private CustomProgressbar progressBar;
 	
+	public CustomProgressbar getProgressBar() {
+		return progressBar;
+	}
+
 	private Image backgroundWithPass = (new ImageIcon(LauncherFrame.class.getResource("/fr/mrwormsy/omnivexel/launcher/resources/backgroundWithPass.png")).getImage());
 	private Image backgroundWithoutPass = (new ImageIcon(LauncherFrame.class.getResource("/fr/mrwormsy/omnivexel/launcher/resources/backgroundWithoutPass.png")).getImage());
 	
@@ -111,7 +115,14 @@ public class LauncherPanel extends JPanel {
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				launchGame();
+				
+				usernamField.setText(usernamField.getText().replaceAll(" ", ""));
+				
+				if (usernamField.getText().length() >= 3) {
+					preLaunch();
+				} else {
+					JOptionPane.showMessageDialog(LauncherFrame.getInstance(), "Your username is incorect !", "Error", JOptionPane.ERROR_MESSAGE);
+				}
 			}
 		});
 
@@ -212,9 +223,14 @@ public class LauncherPanel extends JPanel {
 			}
 		});
 		
-		progressBar = new JProgressBar(5, 10);
-		progressBar.setBounds(400, 400, 100, 20);
-		progressBar.setValue(5);
+		progressBar = new CustomProgressbar((new ImageIcon(LauncherFrame.class.getResource("/fr/mrwormsy/omnivexel/launcher/resources/ProgressBarEmpty.png"))).getImage(), (new ImageIcon(LauncherFrame.class.getResource("/fr/mrwormsy/omnivexel/launcher/resources/ProgressBarFull.png"))).getImage());
+		
+		//progressBar = new JProgressBar(5, 10);
+		progressBar.setBounds(30, 500, 900, 20);
+		progressBar.setBorder(null);
+		progressBar.setMinimum(0);
+		progressBar.setMaximum(0);
+		
 		
 		
 		this.add(reduceButton);
@@ -226,8 +242,7 @@ public class LauncherPanel extends JPanel {
 		this.add(usernamField);
 		this.add(connectionToServerOn);
 		this.add(chckbxNewCheckBox);
-		this.add(progressBar);
-		
+		this.add(progressBar);		
 	}
 	
 	public JTextField getUsernamField() {
@@ -241,83 +256,51 @@ public class LauncherPanel extends JPanel {
 	public JSlider getRamSelector() {
 		return ramSelector;
 	}
-
-	protected void launchGame() {
+	
+	public void preLaunch() {
 		Account.setUsername(usernamField.getText());
 		Account.setRam(String.valueOf(ramSelector.getValue() * 512) + "M");
-			
-		
+
+
 		launchButton.setEnabled(false);
 		usernamField.setEnabled(false);
 		passInput.setEnabled(false);
 		chckbxNewCheckBox.setEnabled(false);
 		connectionToServerOn.setEnabled(false);
 		connectionToServerOff.setEnabled(false);
-		ramSelector.setEnabled(false);
+		ramSelector.setEnabled(false);			
 		
-		GameUpdater gameUpdater = new GameUpdater();
-        
-        
-            	Thread thread = new Thread(new Runnable() {
-                    @Override
-                    public void run() {
-                    	
-                    	
-                        ScheduledExecutorService exec = Executors.newSingleThreadScheduledExecutor();
-                        exec.scheduleAtFixedRate(new Runnable() {
-                          @Override
-                          public void run() {
-                        	  
-                        	  if (progressBar.getMinimum() != 0) {
-                        		  progressBar.setMaximum(gameUpdater.downloadTask.needToDownload);
-                        		  progressBar.setMinimum(0);
-                        	  }
-                        	
-                        	
-    						progressBar.setValue(gameUpdater.downloadTask.downloadedFiles);
-    						//System.out.println(gameUpdater.downloadTask.downloadedFiles);
-                        	  
-                        	  
-                          }
-                        }, 2000, 100, TimeUnit.MILLISECONDS);                    	
-                    }
-                });
-            	
-            	thread.start();
+		Thread t = new Thread() {
+			
+			@Override
+			public void run() {
+				
+				try {
+					LauncherFrame.update();
+				} catch (Exception e) {
+					LauncherFrame.interruptThread();
+					
+					//TODO SET THE FIELDS ENABLE
+					
+					e.printStackTrace();
+					
+					return;
+				}
+				
+			}
+			
+		};
 		
-		gameUpdater.checkForUpdateLauncher();
-		
-		PropertiesSaver.saveProps();
-		
-		/*
-		
-        LaunchGame gameLaunch = new LaunchGame();
-        gameLaunch.launchGame();
-        
-        LauncherFrame.getInstance().dispose();
-        System.exit(0);
-		
-		
-	
-		*/
+		t.start();
 	}
 
 	public void refreshTextures() {
 
 		this.repaint();
 		
-	}	
-	
-	 public long fileCount(Path dir) { 
-		    try {
-				return Files.walk(dir)
-				            .parallel()
-				            .filter(p -> !p.toFile().isDirectory())
-				            .count();
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			return 0;
-	 }
+	}
+
+	public JButton getLaunchButton() {
+		return this.launchButton;
+	}
 }

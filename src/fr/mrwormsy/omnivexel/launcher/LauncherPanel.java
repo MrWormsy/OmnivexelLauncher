@@ -7,6 +7,7 @@ import java.awt.Graphics;
 import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.IOException;
 
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -36,9 +37,9 @@ public class LauncherPanel extends JPanel {
 	private CustomProgressbar progressBar;
 	
 	private JLabel progressBarInfos;
-
-	private Image backgroundWithPass = (new ImageIcon(LauncherFrame.class.getResource("/fr/mrwormsy/omnivexel/launcher/resources/backgroundWithPass.png")).getImage());
-	private Image backgroundWithoutPass = (new ImageIcon(LauncherFrame.class.getResource("/fr/mrwormsy/omnivexel/launcher/resources/backgroundWithoutPass.png")).getImage());
+	
+	private Image backgroundWithPass = (new ImageIcon(LauncherFrame.getInstance().getClass().getResource("/fr/mrwormsy/omnivexel/launcher/resources/backgroundWithPass.png")).getImage());
+	private Image backgroundWithoutPass = (new ImageIcon(LauncherFrame.getInstance().getClass().getResource("/fr/mrwormsy/omnivexel/launcher/resources/backgroundWithoutPass.png")).getImage());
 	
 	private boolean connectionToOmnivexelServer;
 
@@ -56,21 +57,20 @@ public class LauncherPanel extends JPanel {
 	}
 	
 	@SuppressWarnings("unused")
-	public LauncherPanel() {
-
-		ImageIcon authMethodImage1 = new ImageIcon(LauncherFrame.class.getResource("/fr/mrwormsy/omnivexel/launcher/resources/OmnixexelAuth.png"));
-		ImageIcon authMethodImage2 = new ImageIcon(LauncherFrame.class.getResource("/fr/mrwormsy/omnivexel/launcher/resources/NoPassAuth.png"));
+	public LauncherPanel() throws IOException {
+		
+		ImageIcon authMethodImage1 = new ImageIcon(LauncherFrame.getInstance().getClass().getResource("/fr/mrwormsy/omnivexel/launcher/resources/omnixexelAuth.png"));
+		ImageIcon authMethodImage2 = new ImageIcon(LauncherFrame.getInstance().getClass().getResource("/fr/mrwormsy/omnivexel/launcher/resources/noPassAuth.png"));
 		
 		this.setBounds(0, 0, 960, 540);
 		this.setLayout(null);
 		this.setBackground(new Color(1.0f,1.0f,1.0f,0.0f));
 		
-		chckbxNewCheckBox = new CustomCheckbox((new ImageIcon(LauncherFrame.class.getResource("/fr/mrwormsy/omnivexel/launcher/resources/rememberMeUnselected.png"))).getImage(), (new ImageIcon(LauncherFrame.class.getResource("/fr/mrwormsy/omnivexel/launcher/resources/rememberMeUnselectedPressed.png"))).getImage(), (new ImageIcon(LauncherFrame.class.getResource("/fr/mrwormsy/omnivexel/launcher/resources/rememberMeSelected.png"))).getImage(), (new ImageIcon(LauncherFrame.class.getResource("/fr/mrwormsy/omnivexel/launcher/resources/rememberMeSelectedPressed.png"))).getImage());
+		chckbxNewCheckBox = new CustomCheckbox((new ImageIcon(LauncherFrame.getInstance().getClass().getResource("/fr/mrwormsy/omnivexel/launcher/resources/rememberMeUnselected.png"))).getImage(), (new ImageIcon(LauncherFrame.getInstance().getClass().getResource("/fr/mrwormsy/omnivexel/launcher/resources/rememberMeUnselectedPressed.png"))).getImage(), (new ImageIcon(LauncherFrame.getInstance().getClass().getResource("/fr/mrwormsy/omnivexel/launcher/resources/rememberMeSelected.png"))).getImage(), (new ImageIcon(LauncherFrame.getInstance().getClass().getResource("/fr/mrwormsy/omnivexel/launcher/resources/rememberMeSelectedPressed.png"))).getImage());
 		chckbxNewCheckBox.setBackground(new Color(205, 214, 156));
 		chckbxNewCheckBox.setBounds(570, 346, 20, 20);
 		chckbxNewCheckBox.setBorder(null);
 
-		
 		usernamField = new JTextField();
 		usernamField.setFont(new Font("SansSerif", Font.PLAIN, 28));
 		usernamField.setBounds(728, 193, 188, 36);
@@ -87,7 +87,7 @@ public class LauncherPanel extends JPanel {
 		passInput.setForeground(new Color(245, 245, 212));
 		passInput.setBorder(null);
 		
-		launchButton = new CustomButton((new ImageIcon(LauncherFrame.class.getResource("/fr/mrwormsy/omnivexel/launcher/resources/launch.png"))).getImage(), (new ImageIcon(LauncherFrame.class.getResource("/fr/mrwormsy/omnivexel/launcher/resources/launchPressed.png"))).getImage());
+		launchButton = new CustomButton((new ImageIcon(LauncherFrame.getInstance().getClass().getResource("/fr/mrwormsy/omnivexel/launcher/resources/launch.png"))).getImage(), (new ImageIcon(LauncherFrame.getInstance().getClass().getResource("/fr/mrwormsy/omnivexel/launcher/resources/launchPressed.png"))).getImage());
 		
 		//launchButton.setIcon(launch);
 		launchButton.setBounds(777, 346, 130, 50);
@@ -130,7 +130,8 @@ public class LauncherPanel extends JPanel {
 		ramIndicator.setBorder(null);
 		ramIndicator.setEditable(false);
 
-		CustomButton closeButton = new CustomButton((new ImageIcon(LauncherFrame.class.getResource("/fr/mrwormsy/omnivexel/launcher/resources/close.png"))).getImage(), (new ImageIcon(LauncherFrame.class.getResource("/fr/mrwormsy/omnivexel/launcher/resources/closePressed.png"))).getImage());
+		CustomButton closeButton = new CustomButton((new ImageIcon(LauncherFrame.getInstance().getClass().getResource("/fr/mrwormsy/omnivexel/launcher/resources/close.png"))).getImage(), (new ImageIcon(LauncherFrame.getInstance().getClass().getResource("/fr/mrwormsy/omnivexel/launcher/resources/closePressed.png"))).getImage());
+		
 		closeButton.setBounds(920, 11, 16, 16);
 		closeButton.setBorder(null);
 		closeButton.setBackground(new Color(53,43,49));
@@ -144,7 +145,8 @@ public class LauncherPanel extends JPanel {
 			}
 		});
 		
-		CustomButton reduceButton = new CustomButton((new ImageIcon(LauncherFrame.class.getResource("/fr/mrwormsy/omnivexel/launcher/resources/reduce.png"))).getImage(), (new ImageIcon(LauncherFrame.class.getResource("/fr/mrwormsy/omnivexel/launcher/resources/reducePressed.png"))).getImage());
+		CustomButton reduceButton = new CustomButton((new ImageIcon(LauncherFrame.getInstance().getClass().getResource("/fr/mrwormsy/omnivexel/launcher/resources/reduce.png"))).getImage(), (new ImageIcon(LauncherFrame.getInstance().getClass().getResource("/fr/mrwormsy/omnivexel/launcher/resources/reducePressed.png"))).getImage());
+		
 		reduceButton.setBounds(890, 11, 16, 16);
 		reduceButton.setBorder(null);
 		reduceButton.setBackground(new Color(53,43,49));
@@ -169,7 +171,8 @@ public class LauncherPanel extends JPanel {
 		
 		connectionToOmnivexelServer = true;
 		
-		connectionToServerOn = new CustomButton((new ImageIcon(LauncherFrame.class.getResource("/fr/mrwormsy/omnivexel/launcher/resources/OmnixelxelConnectionOnButton.png"))).getImage(), (new ImageIcon(LauncherFrame.class.getResource("/fr/mrwormsy/omnivexel/launcher/resources/OmnixelxelConnectionOnButtonPressed.png"))).getImage());
+		connectionToServerOn = new CustomButton((new ImageIcon(LauncherFrame.getInstance().getClass().getResource("/fr/mrwormsy/omnivexel/launcher/resources/omnixelxelConnectionOnButton.png"))).getImage(), (new ImageIcon(LauncherFrame.getInstance().getClass().getResource("/fr/mrwormsy/omnivexel/launcher/resources/omnixelxelConnectionOnButtonPressed.png"))).getImage());
+		
 		connectionToServerOn.setBounds(870, 308, 40, 25);
 		connectionToServerOn.setBorder(null);	
 		connectionToServerOn.setBackground(new Color(197, 205, 150));
@@ -187,7 +190,8 @@ public class LauncherPanel extends JPanel {
 			}
 		});
 		
-		connectionToServerOff = new CustomButton((new ImageIcon(LauncherFrame.class.getResource("/fr/mrwormsy/omnivexel/launcher/resources/OmnixelxelConnectionOffButton.png"))).getImage(), (new ImageIcon(LauncherFrame.class.getResource("/fr/mrwormsy/omnivexel/launcher/resources/OmnixelxelConnectionOffButtonPressed.png"))).getImage());
+		connectionToServerOff = new CustomButton((new ImageIcon(LauncherFrame.getInstance().getClass().getResource("/fr/mrwormsy/omnivexel/launcher/resources/omnixelxelConnectionOffButton.png"))).getImage(), (new ImageIcon(LauncherFrame.getInstance().getClass().getResource("/fr/mrwormsy/omnivexel/launcher/resources/omnixelxelConnectionOffButtonPressed.png"))).getImage());
+		
 		connectionToServerOff.setBounds(870, 308, 40, 25);
 		connectionToServerOff.setBorder(null);
 		connectionToServerOff.setBackground(new Color(197, 205, 150));
@@ -206,7 +210,7 @@ public class LauncherPanel extends JPanel {
 			}
 		});
 		
-		progressBar = new CustomProgressbar((new ImageIcon(LauncherFrame.class.getResource("/fr/mrwormsy/omnivexel/launcher/resources/ProgressBarEmpty.png"))).getImage(), (new ImageIcon(LauncherFrame.class.getResource("/fr/mrwormsy/omnivexel/launcher/resources/ProgressBarFull.png"))).getImage());
+		progressBar = new CustomProgressbar((new ImageIcon(LauncherFrame.getInstance().getClass().getResource("/fr/mrwormsy/omnivexel/launcher/resources/progressBarEmpty.png"))).getImage(), (new ImageIcon(LauncherFrame.getInstance().getClass().getResource("/fr/mrwormsy/omnivexel/launcher/resources/progressBarFull.png"))).getImage());
 		
 		//progressBar = new JProgressBar(5, 10);
 		progressBar.setBounds(30, 500, 900, 20);
@@ -219,9 +223,10 @@ public class LauncherPanel extends JPanel {
 		progressBarInfos.setVerticalAlignment(JLabel.CENTER);
 		progressBarInfos.setBounds(405, 465, 150, 25);
 		progressBarInfos.setFont(new Font("SansSerif", Font.BOLD, 16));
-		progressBarInfos.setIcon(new ImageIcon(LauncherFrame.class.getResource("/fr/mrwormsy/omnivexel/launcher/resources/ProgressBarInfos.png")));
 		
 		
+		
+		progressBarInfos.setIcon(new ImageIcon(LauncherFrame.getInstance().getClass().getResource("/fr/mrwormsy/omnivexel/launcher/resources/progressBarInfos.png")));
 		
 		this.add(reduceButton);
 		this.add(closeButton);
@@ -234,6 +239,10 @@ public class LauncherPanel extends JPanel {
 		this.add(chckbxNewCheckBox);
 		this.add(progressBar);		
 		this.add(progressBarInfos);
+		
+		NewsPanel newsPanel = new NewsPanel();
+		newsPanel.setLocation(25, 25);
+		this.add(newsPanel);
 	}
 	
 	public void preLaunch() {

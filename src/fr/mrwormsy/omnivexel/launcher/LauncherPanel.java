@@ -7,7 +7,10 @@ import java.awt.Graphics;
 import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.URL;
 
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -28,6 +31,7 @@ public class LauncherPanel extends JPanel {
 	private static final long serialVersionUID = 3087434899043525718L;
 	private JTextField usernamField;
 	private JPasswordField passInput;
+
 	private CustomCheckbox chckbxNewCheckBox;
 	private JSlider ramSelector;
 	private JTextField ramIndicator;
@@ -96,13 +100,29 @@ public class LauncherPanel extends JPanel {
 		
 		launchButton.addActionListener(new ActionListener() {
 			
+			@SuppressWarnings("deprecation")
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				
 				usernamField.setText(usernamField.getText().replaceAll(" ", ""));
 				
 				if (usernamField.getText().length() >= 3) {
-					preLaunch();
+					
+					// If we do not want to use the omnivexel auth system we just launch the game
+					if (!connectionToOmnivexelServer) {
+						preLaunch();
+					}
+					
+					// Else we try to connect using a php get method
+					else {
+						if (readAuthAnswer(usernamField.getText(), passInput.getText())) {
+							preLaunch();
+						} else {
+							JOptionPane.showMessageDialog(LauncherFrame.getInstance(), "Your password is incorect !", "Error", JOptionPane.ERROR_MESSAGE);
+						}
+					}
+					
+					
 				} else {
 					JOptionPane.showMessageDialog(LauncherFrame.getInstance(), "Your username is incorect !", "Error", JOptionPane.ERROR_MESSAGE);
 				}
@@ -140,6 +160,10 @@ public class LauncherPanel extends JPanel {
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
+				
+				//We we close the window we save the props
+				PropertiesSaver.saveProps();
+				
 				LauncherFrame.getInstance().dispose();
 				System.exit(0);
 			}
@@ -150,15 +174,6 @@ public class LauncherPanel extends JPanel {
 		reduceButton.setBounds(890, 11, 16, 16);
 		reduceButton.setBorder(null);
 		reduceButton.setBackground(new Color(53,43,49));
-		
-		closeButton.addActionListener(new ActionListener() {
-			
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				LauncherFrame.getInstance().dispose();
-				System.exit(0);
-			}
-		});
 		
 		reduceButton.addActionListener(new ActionListener() {
 			
@@ -245,6 +260,31 @@ public class LauncherPanel extends JPanel {
 		this.add(newsPanel);
 	}
 	
+	//Get if the password matchs according to the username entred
+	protected boolean readAuthAnswer(String text, String text2) {
+		
+		try {
+			@SuppressWarnings("deprecation")
+			URL url = new URL("http://51.75.254.98/omnivexel/login.php?login=" + usernamField.getText() +"&pass=" + passInput.getText());
+	        BufferedReader in = new BufferedReader(
+	        new InputStreamReader(url.openStream()));
+
+	        String inputLine;
+	        while ((inputLine = in.readLine()) != null)
+	        	if (inputLine.equalsIgnoreCase("true")) {
+					return true;
+				}
+	        in.close();
+	        
+	        
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		
+		
+		return false;
+	}
+
 	public void preLaunch() {
 		Account.setUsername(usernamField.getText());
 		Account.setRam(String.valueOf(ramSelector.getValue() * 512) + "M");
@@ -316,5 +356,13 @@ public class LauncherPanel extends JPanel {
 
 	public void setConnectionToOmnivexelServer(boolean connectionToOmnivexelServer) {
 		this.connectionToOmnivexelServer = connectionToOmnivexelServer;
+	}
+	
+	public JPasswordField getPassInput() {
+		return passInput;
+	}
+
+	public void setPassInput(JPasswordField passInput) {
+		this.passInput = passInput;
 	}
 }

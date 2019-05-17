@@ -11,7 +11,6 @@ import java.util.Properties;
 import fr.trxyy.launcherlib.LauncherConstants;
 import fr.trxyy.launcherlib.OSUtil;
 import fr.trxyy.launcherlib.accounts.Account;
-import fr.trxyy.launcherlib.utils.Logger;
 
 public class PropertiesSaver {
     public static String username;
@@ -47,10 +46,11 @@ public class PropertiesSaver {
                 try {
                     output = new FileOutputStream(OSUtil.getDirectory() + "/config.cfg");
                     prop.setProperty("accountName", "Pseudo");
-                    prop.setProperty("ramAllowed", "1024");
+                    prop.setProperty("ramAllowed", "1024M");
                     prop.setProperty("gameWidth", "854");
                     prop.setProperty("gameHeight", "480");
                     prop.setProperty("rememberMe", "false");
+                    prop.setProperty("password", "");
                     prop.store(output, null);
                 }
                 catch (IOException io) {
@@ -77,18 +77,19 @@ public class PropertiesSaver {
         }
     }
 
-    public static void saveProps() {
+    @SuppressWarnings("deprecation")
+	public static void saveProps() {
         block12 : {
             prop = new Properties();
             try {
                 try {
                     output = new FileOutputStream(OSUtil.getDirectory() + "/config.cfg");
-                    Logger.write("AccountNameSave: " + Account.getUsername());
-                    prop.setProperty("accountName", Account.getUsername());
-                    prop.setProperty("ramAllowed", Account.getRam());
+                    prop.setProperty("accountName", LauncherFrame.getLauncherPanel().getUsernamField().getText());
+                    prop.setProperty("ramAllowed", String.valueOf(LauncherFrame.getLauncherPanel().getRamSelector().getValue() * 512) + "M");
                     prop.setProperty("gameWidth", LauncherConstants.getGameWidth());
                     prop.setProperty("gameHeight", LauncherConstants.getGameHeight());
                     prop.setProperty("rememberMe", "" + LauncherFrame.getLauncherPanel().getChckbxNewCheckBox().isSelected());
+                    prop.setProperty("password", LauncherFrame.getLauncherPanel().getPassInput().getText());
                     prop.store(output, null);
                 }
                 catch (IOException io) {
@@ -133,9 +134,11 @@ public class PropertiesSaver {
                     gameHeight = prop.getProperty("gameHeight");
                     LauncherConstants.setGameHeight(prop.getProperty("gameHeight"));
                     
+                    LauncherFrame.getLauncherPanel().getUsernamField().setText(prop.getProperty("accountName"));
+                    
                     if (prop.getProperty("rememberMe").equalsIgnoreCase("true")) {
                     	LauncherFrame.getLauncherPanel().getChckbxNewCheckBox().setSelected(true);
-                    	LauncherFrame.getLauncherPanel().getUsernamField().setText(prop.getProperty("accountName"));
+                    	LauncherFrame.getLauncherPanel().getPassInput().setText(prop.getProperty("password"));
 					} else {
 						LauncherFrame.getLauncherPanel().getChckbxNewCheckBox().setSelected(false);
 					}

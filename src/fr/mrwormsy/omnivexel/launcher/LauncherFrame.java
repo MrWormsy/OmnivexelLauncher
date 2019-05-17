@@ -1,13 +1,13 @@
 package fr.mrwormsy.omnivexel.launcher;
 
 import java.awt.Color;
+import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.Point;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionAdapter;
 import java.io.BufferedReader;
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.MalformedURLException;
@@ -59,8 +59,6 @@ public class LauncherFrame extends JFrame {
 		config.setLaunchArguments("--username ${auth_player_name} --version ${version_name} --gameDir ${game_directory} --assetsDir ${assets_root} --assetIndex ${assets_index_name} --uuid ${auth_uuid} --accessToken ${auth_access_token} --userType ${user_type} --versionType ${version_type}"); 
 		Init.setConfiguration(config);
 		Init.registerLauncherConfiguration("Omnivexel Launcher", 850, 540, "omnivexelproject/game", "/resources/"); 
-		
-		
 
 		PropertiesSaver.loadUserProps();
 	}
@@ -81,7 +79,7 @@ public class LauncherFrame extends JFrame {
 		this.setBounds(100, 100, 960, 540);
 		this.setPreferredSize(new Dimension(960, 540));
 		this.setLayout(null);
-		
+				
 		//Move the window
 		Point point = new Point();
 		
@@ -126,6 +124,8 @@ public class LauncherFrame extends JFrame {
 	public static void update() throws Exception {
 		setSu(new SUpdate("http://51.75.254.98/omnivexel/", OSUtil.getDirectory()));
 				
+		getInstance().rootPane.setCursor(new Cursor(Cursor.WAIT_CURSOR));
+		
 		thread = new Thread() {
 			
 			private int val;
@@ -170,6 +170,9 @@ public class LauncherFrame extends JFrame {
 	}
 	
 	public static void launchGame() {
+		
+		//Save props
+		PropertiesSaver.saveProps();
 		
         LaunchGame gameLaunch = new LaunchGame();
         gameLaunch.launchGame();

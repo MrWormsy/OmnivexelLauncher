@@ -8,10 +8,6 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Properties;
 
-import fr.trxyy.launcherlib.LauncherConstants;
-import fr.trxyy.launcherlib.OSUtil;
-import fr.trxyy.launcherlib.accounts.Account;
-
 public class PropertiesSaver {
     public static String username;
     public static String ram;
@@ -85,9 +81,9 @@ public class PropertiesSaver {
                 try {
                     output = new FileOutputStream(OSUtil.getDirectory() + "/config.cfg");
                     prop.setProperty("accountName", LauncherFrame.getLauncherPanel().getUsernamField().getText());
+                    username = LauncherFrame.getLauncherPanel().getUsernamField().getText();
                     prop.setProperty("ramAllowed", String.valueOf(LauncherFrame.getLauncherPanel().getRamSelector().getValue() * 512) + "M");
-                    prop.setProperty("gameWidth", LauncherConstants.getGameWidth());
-                    prop.setProperty("gameHeight", LauncherConstants.getGameHeight());
+                    ram = String.valueOf(LauncherFrame.getLauncherPanel().getRamSelector().getValue() * 512) + "M";
                     prop.setProperty("rememberMe", "" + LauncherFrame.getLauncherPanel().getChckbxNewCheckBox().isSelected());
                     prop.setProperty("password", LauncherFrame.getLauncherPanel().getPassInput().getText());
                     prop.store(output, null);
@@ -124,15 +120,9 @@ public class PropertiesSaver {
                     input = new FileInputStream(OSUtil.getDirectory() + "/config.cfg");
                     prop.load(input);
                     username = prop.getProperty("accountName");
-                    Account.setUsername(prop.getProperty("accountName"));
                     
                     LauncherFrame.getLauncherPanel().getRamSelector().setValue(Integer.parseInt(prop.getProperty("ramAllowed").replaceAll("M", "")) / 512);
                     ram = prop.getProperty("ramAllowed");
-                    Account.setRam(prop.getProperty("ramAllowed"));
-                    gameWidth = prop.getProperty("gameWidth");
-                    LauncherConstants.setGameWidth(prop.getProperty("gameWidth"));
-                    gameHeight = prop.getProperty("gameHeight");
-                    LauncherConstants.setGameHeight(prop.getProperty("gameHeight"));
                     
                     LauncherFrame.getLauncherPanel().getUsernamField().setText(prop.getProperty("accountName"));
                     

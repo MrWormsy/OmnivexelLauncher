@@ -18,25 +18,26 @@ import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 
-import com.launcher.game.process.direct.LaunchGame;
-
+import fr.mrwormsy.omnivexel.launcher.game.LaunchGame;
 import fr.theshark34.supdate.BarAPI;
 import fr.theshark34.supdate.SUpdate;
-import fr.trxyy.launcherlib.Init;
-import fr.trxyy.launcherlib.OSUtil;
-import fr.trxyy.launcherlib.utils.LauncherConfiguration;
 
 public class LauncherFrame extends JFrame {
 	private static final long serialVersionUID = 1L;
 
-
+	
 	
 	private static LauncherFrame instance;
 	private static LauncherPanel launcherPanel;
 	
 	private static SUpdate su;
 	
-	//TODO CHANGE Authentification to Authentication
+	// Static things
+	private static String versionId;
+	private static String launchClass;
+	private static String assetIndex;
+	private static String arguments;
+	private static String launcherDirectory = "omnivexelproject/game";
 
 
 	@SuppressWarnings("static-access")
@@ -49,16 +50,10 @@ public class LauncherFrame extends JFrame {
 			System.exit(0);
 		}
 		
-		LauncherConfiguration config = new LauncherConfiguration(); 
-		config.setVersionId("1.9.4"); 
-		config.setAssetIndex("1.9"); 
-		config.setLaunchClass("net.minecraft.client.main.Main"); 
-		config.setDownloadUrl("http://51.75.254.98/downloads/"); 
-		config.setCurrentlyMaintenance(false); 
-		config.setMaintenanceUrl(""); 
-		config.setLaunchArguments("--username ${auth_player_name} --version ${version_name} --gameDir ${game_directory} --assetsDir ${assets_root} --assetIndex ${assets_index_name} --uuid ${auth_uuid} --accessToken ${auth_access_token} --userType ${user_type} --versionType ${version_type}"); 
-		Init.setConfiguration(config);
-		Init.registerLauncherConfiguration("Omnivexel Launcher", 850, 540, "omnivexelproject/game", "/resources/"); 
+		setVersionId("1.9.4"); 
+		setAssetIndex("1.9"); 
+		setLaunchClass("net.minecraft.client.main.Main"); 
+		setArguments("--username ${auth_player_name} --version ${version_name} --gameDir ${game_directory} --assetsDir ${assets_root} --assetIndex ${assets_index_name} --uuid ${auth_uuid} --accessToken ${auth_access_token} --userType ${user_type} --versionType ${version_type}");  
 
 		PropertiesSaver.loadUserProps();
 	}
@@ -241,5 +236,55 @@ public class LauncherFrame extends JFrame {
 
 	public static void setSu(SUpdate su) {
 		LauncherFrame.su = su;
+	}
+
+
+	public static String getVersionId() {
+		return versionId;
+	}
+
+
+	public static void setVersionId(String versionId) {
+		LauncherFrame.versionId = versionId;
+	}
+
+
+	public static String getLaunchClass() {
+		return launchClass;
+	}
+
+
+	public static void setLaunchClass(String launchClass) {
+		LauncherFrame.launchClass = launchClass;
+	}
+
+
+	public static String getAssetIndex() {
+		return assetIndex;
+	}
+
+
+	public static void setAssetIndex(String assetIndex) {
+		LauncherFrame.assetIndex = assetIndex;
+	}
+
+
+	public static String getArguments() {
+		return arguments;
+	}
+
+
+	public static void setArguments(String arguments) {
+		LauncherFrame.arguments = arguments;
+	}
+
+
+	public static String getLauncherDirectory() {
+		return launcherDirectory;
+	}
+
+
+	public static void setLauncherDirectory(String launcherDirectory) {
+		LauncherFrame.launcherDirectory = launcherDirectory;
 	}
 }

@@ -23,8 +23,6 @@ import javax.swing.JTextField;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
-import fr.trxyy.launcherlib.accounts.Account;
-
 
 
 public class LauncherPanel extends JPanel {
@@ -286,9 +284,6 @@ public class LauncherPanel extends JPanel {
 	}
 
 	public void preLaunch() {
-		Account.setUsername(usernamField.getText());
-		Account.setRam(String.valueOf(ramSelector.getValue() * 512) + "M");
-
 		launchButton.setEnabled(false);
 		usernamField.setEnabled(false);
 		passInput.setEnabled(false);
